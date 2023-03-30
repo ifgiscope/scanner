@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  cityscopy:
+    build: ./CS_CityScoPy-3.2
+    command: python run.py
+    volumes:
+      - ./CS_CityScoPy-3.2/:/usr/src/app/CS_CityScopePy-3.2/
+      - /tmp/.X11-unix:/tmp/.x11-unix
+    devices:
+      - /dev/video0:dev/video0
+      - /dev/video1:dev/video1
+      - /dev/video2:dev/video2
+      - /dev/video3:dev/video3
+    environment:
+      - DISPLAY=${DISPLAY}
+    network_mode: host
+    
+  udp_listener:
+    build: ./CS_CityScoPy-3.2
+    command: python run_udp.py
+    volumes:
+      - ./CS_CityScoPy-3.2/settings:/usr/src/app/CS_CityScopePy-3.2/settings
+    ports:
+      - 5000:5000
+    network_mode: host
+   
+    
+
+
+
