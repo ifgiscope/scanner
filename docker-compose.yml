@@ -21,9 +21,8 @@ services:
     command: python run_udp.py
     volumes:
       - ./CS_CityScoPy-3.2/settings:/usr/src/app/CS_CityScopePy-3.2/settings
-    ports:
-      - 5000:5000
     network_mode: host
+
    
     
 
