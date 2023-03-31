@@ -4,11 +4,13 @@ FROM python:3.8-bullseye
 WORKDIR /usr/src/app/CS_CityScopePy-3.2
 
 #install dependencies
-RUN apt update && apt install -y libgl1
-
-# install pip and python packages
-RUN pip install --upgrade pip && pip install wheel && pip install numpy && pip install opencv-python && pip install requests
-
+RUN apt update && \
+apt install -y libgl1 && \
+pip install --upgrade pip \
+&& pip install wheel && \
+pip install numpy && \
+pip install opencv-python && \
+pip install requests
 
 
 # copy project
