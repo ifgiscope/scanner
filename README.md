@@ -13,3 +13,9 @@ Before starting the containers check the mounted video devices with `ls /dev | g
 2. If a new camera is used run `docker compose -f docker-compose.calibrate.yml up` and select the corners of the grid. The run `docker compose -f docker-compose.calibrate.yml down`
 3. Run `docker compose up`
 4. To stop the application do a keyboard interrupt and run `docker compose down`
+
+## To Do's
+
+[ ] (Maybe) Automate the device mounting. See [stackoverflow: docker-compose devices map all devices from local to container](https://stackoverflow.com/questions/73339141/docker-compose-devices-map-all-devices-from-local-to-container)
+[ ] Connect to a CityIO instance instead the local udp listener 
+[ ] Test and adjust with a real grid
