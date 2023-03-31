@@ -10,9 +10,10 @@ pip install --upgrade pip \
 && pip install wheel && \
 pip install numpy && \
 pip install opencv-python && \
-pip install requests
+pip install requests && \
+adduser cityscopepy && adduser cityscopepy video
 
-
+USER cityscopepy
 # copy project
 COPY . /usr/src/app/CS_CityScopePy-3.2
 
