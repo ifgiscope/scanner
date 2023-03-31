@@ -16,6 +16,6 @@ Before starting the containers check the mounted video devices with `ls /dev | g
 
 ## To Do's
 
-[ ] (Maybe) Automate the device mounting. See [stackoverflow: docker-compose devices map all devices from local to container](https://stackoverflow.com/questions/73339141/docker-compose-devices-map-all-devices-from-local-to-container)
-[ ] Connect to a CityIO instance instead the local udp listener 
-[ ] Test and adjust with a real grid
+[ ] (Maybe) Automate the device mounting. See [stackoverflow: docker-compose devices map all devices from local to container](https://stackoverflow.com/questions/73339141/docker-compose-devices-map-all-devices-from-local-to-container)  
+[ ] Connect to a CityIO instance instead the local udp listener   
+[ ] Test and adjust with a real grid  
