@@ -14,6 +14,12 @@ Before starting the containers check the mounted video devices with `ls /dev | g
 3. Run `docker compose up`
 4. To stop the application do a keyboard interrupt and run `docker compose down`
 
+
+## Documentation dockerfile
+The base python:3.8-bullseye was chosen due to the good compatibilty with the used python packages.  
+Only one RUN statement was used to avoid unecessary layers. in the RUN statement all necessary dependencies are installed and a non-root user is created. The user is part of the video group so that the container can use cameras.  
+Afte ther RUN statement the user is changed from the root user to the newly created user.
+
 ## To Do's
 
 [ ] (Maybe) Automate the device mounting. See [stackoverflow: docker-compose devices map all devices from local to container](https://stackoverflow.com/questions/73339141/docker-compose-devices-map-all-devices-from-local-to-container)  
