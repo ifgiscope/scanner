@@ -20,7 +20,7 @@ services:
     build: ./CS_CityScoPy-3.2
     command: python run_udp.py
     volumes:
-      - ./CS_CityScoPy-3.2//usr/src/app/CS_CityScopePy-3.2/
+      - ./CS_CityScoPy-3.2/:/usr/src/app/CS_CityScopePy-3.2/
 
    
     
