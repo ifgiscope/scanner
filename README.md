@@ -22,7 +22,7 @@ Afte ther RUN statement the user is changed from the root user to the newly crea
 ## Documentation docker-compose 
 Creates two containers, one with the actual CityScoPy program running and another with the UDP listener. The host network mode was chosen to enable the necessary use of the GUI via xhost. The temp directory for xhost is also mounted in the cityscopy container alongside the video devices. The display environment variable from the OS environment is consigned to the cityscopy container.  
 The docker-comose.calibrate.yml file only creates a container to calibrate the camera for CityScoPy.  
-All containers are monuted with the ./CS_CityScoPy-3.2/ directory.
+All containers are mounted with the ./CS_CityScoPy-3.2/ directory as a volume.
 
 ## To Do's
 
