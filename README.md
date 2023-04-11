@@ -15,13 +15,13 @@ Before starting the containers check the mounted video devices with `ls /dev | g
 
 
 ## Documentation dockerfile
-The base python:3.8-bullseye was chosen due to the good compatibilty with the used python packages.  
-Only one RUN statement was used to avoid unecessary layers. in the RUN statement all necessary dependencies are installed and a non-root user is created. The user is part of the video group so that the container can use cameras.  
+The base image python:3.8-bullseye was chosen due to the good compatibilty with the used python packages.  
+Only one RUN statement was used to avoid unecessary layers. In the RUN statement all necessary dependencies are installed and a non-root user is created. The user is part of the video group so that the container can use cameras.  
 Afte ther RUN statement the user is changed from the root user to the newly created user.
 
 ## Documentation docker-compose 
-Creates two containers, one with the actual CityScoPy program running and another with the UDP listener. The host network mode was chosen to enable the necessary use of the GUI via xhost. The temp directory for xhost is also mounted in the cityscopy container alongside the video devices. The display environment variable from the OS environment is consigned to the cityscopy container.
-The docker-comose.calibrate.yml file only creates a container to calibrate the camera for CityScoPy.
+Creates two containers, one with the actual CityScoPy program running and another with the UDP listener. The host network mode was chosen to enable the necessary use of the GUI via xhost. The temp directory for xhost is also mounted in the cityscopy container alongside the video devices. The display environment variable from the OS environment is consigned to the cityscopy container.  
+The docker-comose.calibrate.yml file only creates a container to calibrate the camera for CityScoPy.  
 All containers are monuted with the ./CS_CityScoPy-3.2/ directory.
 
 ## To Do's
