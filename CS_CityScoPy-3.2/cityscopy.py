@@ -457,7 +457,7 @@ class Cityscopy:
             output_list.pop()
             output_list.append("],")
         output_list.pop()
-        output_list.append("]")
+        output_list.append("]]")
         output_json = "".join(output_list)
         print(output_json)
 
