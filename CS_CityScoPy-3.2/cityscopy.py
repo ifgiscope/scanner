@@ -63,6 +63,15 @@ from multiprocessing import Process, Manager
 import random
 
 
+
+
+def crop_json (uncropped_json):
+        temp_json = json.dumps(uncropped_json)
+        print(temp_json)
+        print(type(temp_json))
+
+        return (temp_json)
+
 class Cityscopy:
     '''sacnner for CityScope'''
 
@@ -413,6 +422,12 @@ class Cityscopy:
                 # debug print
                 print('\n', 'CityScopy grid sent at:', datetime.now())
 
+
+
+
+
+
+
     ##################################################
 
     def send_json_to_cityIO(self, cityIO_json):
@@ -423,20 +438,54 @@ class Cityscopy:
         API_ENDPOINT = "https://cityio.media.mit.edu/api/table/update/" + \
             self.table_settings['cityscope_project_name'] + "/grid/"
         # sending post request and saving response as response object
-        req = requests.post(url=API_ENDPOINT, data=cityIO_json)
+        print(cityIO_json)
+        ncol = self.table_settings['ncols']
+        nrow = self.table_settings['nrows']
+        temp_json = cityIO_json.replace("[","")
+        temp_json = temp_json.replace("]","")
+        temp_json = temp_json.split(",")
+        output_list = []
+        output_list.append("[")
+        i=0
+        for row in range(nrow):
+            output_list.append("[")
+            for col in range(ncol):
+
+                output_list.append(temp_json[i+col])
+                output_list.append(",")
+            i = i + ncol
+            output_list.pop()
+            output_list.append("],")
+        output_list.pop()
+        output_list.append("]")
+        output_json = "".join(output_list)
+        print(output_json)
+
+
+            
+        
+        #croppedJSON = crop_json(cityIO_json)
+        req = requests.post(url=API_ENDPOINT, data=output_json)
         if req.status_code != 200:
             print("cityIO might be down. so sad.")
         print("sending grid to", API_ENDPOINT,  req)
 
-    ##################################################
+
+
+
+    ###################################################
 
     def send_json_to_UDP(self, scan_results):
         # defining the udp endpoint
         UDP_IP = "127.0.0.1"
         UDP_PORT = 5000
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        localJSON = "C:/Users/janse/OneDrive/Programing/JSON/" + str(datetime.now()).replace(":","-") + ".json"
         try:
+            
             sock.sendto(str(scan_results).encode('utf-8'), (UDP_IP, UDP_PORT))
+            with open(localJSON.replace(" ",""), 'w', encoding ='utf8') as json_file:
+                json.dump(scan_results, json_file)
         except Exception as e:
             print(e)
 
@@ -632,7 +681,7 @@ class Cityscopy:
                 this_16_bits, tagsArray, mapArray)
             # if no results were found
             if result_tag == None:
-                result_tag = [-1, -1]
+                result_tag = -1 #here be dragons
             # add a list of results to the array
             scan_results_array.append(result_tag)
         # finally, return this list to main program for UDP
@@ -645,22 +694,22 @@ class Cityscopy:
         for this_tag in tagsArray:
             # if this 16 bits equal the tag as is
             if np.array_equal(this_16_bits, this_tag):
-                return [tags_array_counter, 0]
+                return tags_array_counter
             # convert list of 16 bits to 4x4 matrix for rotation
             brk_4x4 = np.reshape(this_16_bits, (4, 4))
             # rotate once
             brk_4x4_270 = np.reshape((np.rot90(brk_4x4)), 16)
             if np.array_equal(brk_4x4_270, this_tag):
-                return [tags_array_counter, 1]
+                return tags_array_counter
             # rotate once
             brk_4x4_180 = np.reshape((np.rot90(np.rot90(brk_4x4))), 16)
             if np.array_equal(brk_4x4_180, this_tag):
-                return [tags_array_counter, 2]
+                return tags_array_counter
             # rotate once
             brk_4x4_90 = np.reshape(
                 (np.rot90(np.rot90(np.rot90(brk_4x4)))), 16)
             if np.array_equal(brk_4x4_90, this_tag):
-                return [tags_array_counter, 3]
+                return tags_array_counter
             else:
                 # if no rotation was found go to next tag
                 # in tag list
