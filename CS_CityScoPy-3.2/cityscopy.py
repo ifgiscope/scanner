@@ -160,7 +160,7 @@ class Cityscopy:
         # serial num of camera, to switch between cameras
         camPos = self.table_settings['camId']
         # try from a device 1 in list, not default webcam
-        video_capture = cv2.VideoCapture(camPos)
+        video_capture = cv2.VideoCapture(camPos, cv2.CAP_DSHOW)
         time.sleep(1)
 
         if grid_dimensions_y < grid_dimensions_x:
@@ -740,7 +740,7 @@ class Cityscopy:
         # serial num of camera, to switch between cameras
         camPos = self.table_settings['camId']
         # try from a device 1 in list, not default webcam
-        WEBCAM = cv2.VideoCapture(camPos)
+        WEBCAM = cv2.VideoCapture(camPos, cv2.CAP_DSHOW)
         time.sleep(1)
 
         # video winodw
