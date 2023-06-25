@@ -61,6 +61,7 @@ import os
 import socket
 from multiprocessing import Process, Manager
 import random
+import sys
 
 
 
@@ -435,40 +436,62 @@ class Cityscopy:
         sends the grid to cityIO 
         '''
         # defining the api-endpoint
-        API_ENDPOINT = "https://cityio.media.mit.edu/api/table/update/" + \
-            self.table_settings['cityscope_project_name'] + "/grid/"
+        #API_ENDPOINT = "https://cityio.media.mit.edu/api/table/update/" + \
+            #self.table_settings['cityscope_project_name'] + "/grid/"
         # sending post request and saving response as response object
-        print(cityIO_json)
+        #print(cityIO_json)
         ncol = self.table_settings['ncols']
         nrow = self.table_settings['nrows']
         temp_json = cityIO_json.replace("[","")
+        temp_json = temp_json.replace("-1","99")
         temp_json = temp_json.replace("]","")
         temp_json = temp_json.split(",")
         output_list = []
-        output_list.append("[")
+        output_list.append("{\n\"cells\": [\n")
         i=0
         for row in range(nrow):
             output_list.append("[")
             for col in range(ncol):
 
                 output_list.append(temp_json[i+col])
-                output_list.append(",")
+                output_list.append(",\n")
             i = i + ncol
             output_list.pop()
-            output_list.append("],")
+            output_list.append("\n],\n")
         output_list.pop()
-        output_list.append("]]")
+        output_list.append("\n]\n]\n}")
         output_json = "".join(output_list)
-        print(output_json)
+        #print(output_json)
 
 
             
         
         #croppedJSON = crop_json(cityIO_json)
-        req = requests.post(url=API_ENDPOINT, data=output_json)
-        if req.status_code != 200:
-            print("cityIO might be down. so sad.")
-        print("sending grid to", API_ENDPOINT,  req)
+        error_msg = "Error sending request:"
+        url = "http://localhost:4848/city/map"
+        #data = json.loads(output_json)
+        data = output_json
+
+        try:
+            with requests.post(
+                url = url,
+                data = data,
+                headers= {"Content-Type": "application/json", "Accept": "application/json",},
+                timeout=5,
+            ) as r:
+                if not r.status_code == 200:
+                    print (r.raise_for_status())
+                    #print(
+                        #error_msg, r.status_code, r. r.reason, url, data, file=sys.stderr
+                    #)
+                    #print ("not 200")
+                elif r.status_code == 200:
+                    print("grid successful sent")
+        except requests.RequestException as e:
+            #print(error_msg, e, url, data, file=sys.stderr)
+            print (data)
+            print (r.raise_for_status())
+
 
 
 
@@ -681,7 +704,7 @@ class Cityscopy:
                 this_16_bits, tagsArray, mapArray)
             # if no results were found
             if result_tag == None:
-                result_tag = -1 #here be dragons
+                result_tag = -1  #here be dragons
             # add a list of results to the array
             scan_results_array.append(result_tag)
         # finally, return this list to main program for UDP
