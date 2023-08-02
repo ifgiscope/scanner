@@ -179,7 +179,7 @@ class Cityscopy:
 
             # define the video window
         cv2.namedWindow('scanner_gui_window', cv2.WINDOW_NORMAL)
-        cv2.resizeWindow('scanner_gui_window', 400, 400)
+        cv2.resizeWindow('scanner_gui_window', 800, 800)
         cv2.moveWindow('scanner_gui_window', 10, 100)
 
         # call colors dictionary
@@ -211,10 +211,24 @@ class Cityscopy:
 
             # read video frames
             RET, this_frame = video_capture.read()
+
             if RET is False:
                 pass
             # else if camera capture is ok
             else:
+                h, w, *_ = this_frame.shape
+                res_matrix = np.array([[w, 0, 0], [0, h, 0], [0, 0, 1]])
+        
+                matrix = [[ 0.6834898667393322, 0.0, 0.4965583739104512 ], [ 0.0, 1.216452331944533, 0.5026849121434522 ], [ 0.0, 0.0, 1.0 ] ]
+                # distortion = [ -0.3714812399536999, 0.21247979505344064, -0.00020619953391510647, -0.0009202007819819389, -0.08640239614978638 ]
+                distortion = [ -0.5714812399536999, 0.31247979505344064, -0.0020619953391510647, -0.009202007819819389, -0.8640239614978638 ]
+
+                rel_camera_matrix = np.array(matrix)
+                distortion_coefficients = np.array(distortion)
+        
+                abs_camera_matrix = np.matmul(res_matrix, rel_camera_matrix)
+                this_frame = cv2.undistort(this_frame,abs_camera_matrix, distortion_coefficients, None, None)
+
                 # mirror camera
                 if self.table_settings['mirror_cam'] is True:
                     this_frame = cv2.flip(this_frame, 1)
@@ -764,6 +778,7 @@ class Cityscopy:
         camPos = self.table_settings['camId']
         # try from a device 1 in list, not default webcam
         WEBCAM = cv2.VideoCapture(camPos, cv2.CAP_DSHOW)
+
         time.sleep(1)
 
         # video winodw
@@ -787,9 +802,33 @@ class Cityscopy:
                 # wait for clicks
                 cv2.setMouseCallback('canvas', save_this_point)
                 # read the WEBCAM frames
+
+
                 _, self.FRAME = WEBCAM.read()
+                h, w, *_ = self.FRAME.shape
+                res_matrix = np.array([[w, 0, 0], [0, h, 0], [0, 0, 1]])
+        
+                matrix = [[ 0.6834898667393322, 0.0, 0.4965583739104512 ], [ 0.0, 1.216452331944533, 0.5026849121434522 ], [ 0.0, 0.0, 1.0 ] ]
+                # distortion = [ -0.3714812399536999, 0.21247979505344064, -0.00020619953391510647, -0.0009202007819819389, -0.08640239614978638 ]
+                distortion = [ -0.5714812399536999, 0.31247979505344064, -0.0020619953391510647, -0.009202007819819389, -0.8640239614978638 ]
+
+                rel_camera_matrix = np.array(matrix)
+                distortion_coefficients = np.array(distortion)
+        
+                abs_camera_matrix = np.matmul(res_matrix, rel_camera_matrix)
+                self.FRAME = cv2.undistort(self.FRAME,abs_camera_matrix, distortion_coefficients, None, None)
+
+
+
+                # _, self.FRAME = WEBCAM.read()
                 if self.table_settings['mirror_cam'] is True:
                     self.FRAME = cv2.flip(self.FRAME, 1)
+                
+                
+                
+                
+                
+                
                 # draw mouse pos
                 cv2.circle(self.FRAME, self.MOUSE_POSITION, 10, (0, 0, 255), 1)
                 cv2.circle(self.FRAME, self.MOUSE_POSITION, 1, (0, 0, 255), 2)

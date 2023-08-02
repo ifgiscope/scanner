@@ -6,9 +6,9 @@
         "nrows": 16,
         "ncols": 16,
         "scan": false,
-        "camId": 0,
+        "camId": 1,
         "interval": 250,
-        "gui": false,
+        "gui": true,
         "cityio": true,
         "tags": [
             "0000000000000000",
