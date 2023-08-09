@@ -220,8 +220,8 @@ class Cityscopy:
                 res_matrix = np.array([[w, 0, 0], [0, h, 0], [0, 0, 1]])
         
                 matrix = [[ 0.6834898667393322, 0.0, 0.4965583739104512 ], [ 0.0, 1.216452331944533, 0.5026849121434522 ], [ 0.0, 0.0, 1.0 ] ]
-                # distortion = [ -0.3714812399536999, 0.21247979505344064, -0.00020619953391510647, -0.0009202007819819389, -0.08640239614978638 ]
-                distortion = [ -0.5714812399536999, 0.31247979505344064, -0.0020619953391510647, -0.009202007819819389, -0.8640239614978638 ]
+                 distortion = [ -0.3714812399536999, 0.21247979505344064, -0.00020619953391510647, -0.0009202007819819389, -0.08640239614978638 ]
+                # distortion = [ -0.5714812399536999, 0.31247979505344064, -0.0020619953391510647, -0.009202007819819389, -0.8640239614978638 ]
 
                 rel_camera_matrix = np.array(matrix)
                 distortion_coefficients = np.array(distortion)
@@ -457,7 +457,7 @@ class Cityscopy:
         ncol = self.table_settings['ncols']
         nrow = self.table_settings['nrows']
         temp_json = cityIO_json.replace("[","")
-        temp_json = temp_json.replace("-1","99")
+        temp_json = temp_json.replace("-1","0")
         temp_json = temp_json.replace("]","")
         temp_json = temp_json.split(",")
         output_list = []
@@ -475,7 +475,7 @@ class Cityscopy:
         output_list.pop()
         output_list.append("\n]\n]\n}")
         output_json = "".join(output_list)
-        #print(output_json)
+        print(output_json)
 
 
             
@@ -809,8 +809,8 @@ class Cityscopy:
                 res_matrix = np.array([[w, 0, 0], [0, h, 0], [0, 0, 1]])
         
                 matrix = [[ 0.6834898667393322, 0.0, 0.4965583739104512 ], [ 0.0, 1.216452331944533, 0.5026849121434522 ], [ 0.0, 0.0, 1.0 ] ]
-                # distortion = [ -0.3714812399536999, 0.21247979505344064, -0.00020619953391510647, -0.0009202007819819389, -0.08640239614978638 ]
-                distortion = [ -0.5714812399536999, 0.31247979505344064, -0.0020619953391510647, -0.009202007819819389, -0.8640239614978638 ]
+                 distortion = [ -0.3714812399536999, 0.21247979505344064, -0.00020619953391510647, -0.0009202007819819389, -0.08640239614978638 ]
+                #distortion = [ -0.5714812399536999, 0.31247979505344064, -0.0020619953391510647, -0.009202007819819389, -0.8640239614978638 ]
 
                 rel_camera_matrix = np.array(matrix)
                 distortion_coefficients = np.array(distortion)

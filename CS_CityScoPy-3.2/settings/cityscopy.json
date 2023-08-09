@@ -1,12 +1,12 @@
 {
     "cityscopy": {
         "cityscope_project_name": "cityscopy",
-        "type": ["0","1", "2", "3", "4", "5", "6"],
+        "type": ["0","1", "2", "3", "4", "5"],
         "rotation": ["0", "1", "2", "3"],
         "nrows": 16,
         "ncols": 16,
         "scan": false,
-        "camId": 1,
+        "camId": 0,
         "interval": 250,
         "gui": true,
         "cityio": true,
