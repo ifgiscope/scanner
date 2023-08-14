@@ -49,29 +49,26 @@ of uniquely tagged LEGO array
 ##################################################
 '''
 
-
-import requests
-import cv2
-import numpy as np
-from datetime import timedelta
-from datetime import datetime
-import time
 import json
 import os
 import socket
+import time
+from datetime import datetime
+from datetime import timedelta
 from multiprocessing import Process, Manager
-import random
-import sys
+
+import cv2
+import numpy as np
+import requests
 
 
+def crop_json(uncropped_json):
+    temp_json = json.dumps(uncropped_json)
+    print(temp_json)
+    print(type(temp_json))
 
+    return (temp_json)
 
-def crop_json (uncropped_json):
-        temp_json = json.dumps(uncropped_json)
-        print(temp_json)
-        print(type(temp_json))
-
-        return (temp_json)
 
 class Cityscopy:
     '''sacnner for CityScope'''
@@ -122,9 +119,9 @@ class Cityscopy:
 
     def get_init_keystone(self):
 
-     # load the initial keystone data from file
+        # load the initial keystone data from file
         keystone_points_array = np.loadtxt(
-            self.get_folder_path()+'keystone.txt', dtype=np.float32)
+            self.get_folder_path() + 'keystone.txt', dtype=np.float32)
 
         # break it to points
         ulx = keystone_points_array[0][0]
@@ -168,11 +165,11 @@ class Cityscopy:
             # get the smaller of two grid ratio x/y or y/x
             grid_ratio = grid_dimensions_y / grid_dimensions_x
             video_resolution_x = int(video_capture.get(3))
-            video_resolution_y = int(video_capture.get(3)*grid_ratio)
+            video_resolution_y = int(video_capture.get(3) * grid_ratio)
         else:
             # get the smaller of two grid ratio x/y or y/x
             grid_ratio = grid_dimensions_x / grid_dimensions_y
-            video_resolution_x = int(video_capture.get(3)*grid_ratio)
+            video_resolution_x = int(video_capture.get(3) * grid_ratio)
             video_resolution_y = int(video_capture.get(3))
 
             # video_resolution_y = int(video_capture.get(3))
@@ -191,8 +188,8 @@ class Cityscopy:
         }
 
         # define the size for each scanner
-        x_ratio = int(video_resolution_x/(grid_dimensions_x*4))
-        y_ratio = int(video_resolution_y/(grid_dimensions_y*4))
+        x_ratio = int(video_resolution_x / (grid_dimensions_x * 4))
+        y_ratio = int(video_resolution_y / (grid_dimensions_y * 4))
         scanner_square_size = np.minimum(x_ratio, y_ratio)
 
         # create the location  array of scanners
@@ -200,7 +197,7 @@ class Cityscopy:
             grid_dimensions_x, grid_dimensions_y, video_resolution_x,
             video_resolution_y, scanner_square_size)
 
-    # run the video loop forever
+        # run the video loop forever
         while True:
             # get a new matrix transformation every frame
             keystone_data = self.transfrom_matrix(
@@ -219,15 +216,17 @@ class Cityscopy:
                 h, w, *_ = this_frame.shape
                 res_matrix = np.array([[w, 0, 0], [0, h, 0], [0, 0, 1]])
 
-                matrix = [[ 0.6834898667393322, 0.0, 0.4965583739104512 ], [ 0.0, 1.216452331944533, 0.5026849121434522 ], [ 0.0, 0.0, 1.0 ] ]
-                distortion = [ -0.3714812399536999, 0.21247979505344064, -0.00020619953391510647, -0.0009202007819819389, -0.08640239614978638 ]
+                matrix = [[0.6834898667393322, 0.0, 0.4965583739104512], [0.0, 1.216452331944533, 0.5026849121434522],
+                          [0.0, 0.0, 1.0]]
+                distortion = [-0.3714812399536999, 0.21247979505344064, -0.00020619953391510647, -0.0009202007819819389,
+                              -0.08640239614978638]
                 # distortion = [ -0.5714812399536999, 0.31247979505344064, -0.0020619953391510647, -0.009202007819819389, -0.8640239614978638 ]
 
                 rel_camera_matrix = np.array(matrix)
                 distortion_coefficients = np.array(distortion)
 
                 abs_camera_matrix = np.matmul(res_matrix, rel_camera_matrix)
-                this_frame = cv2.undistort(this_frame,abs_camera_matrix, distortion_coefficients, None, None)
+                this_frame = cv2.undistort(this_frame, abs_camera_matrix, distortion_coefficients, None, None)
 
                 # mirror camera
                 if self.table_settings['mirror_cam'] is True:
@@ -247,16 +246,16 @@ class Cityscopy:
 
                 # use this to control reduction of scanner size
                 this_scanner_max_dimension = int(scanner_square_size)
-                scanner_reduction = int(scanner_square_size/4)
+                scanner_reduction = int(scanner_square_size / 4)
                 # short vars
-                x_red = x + this_scanner_max_dimension-scanner_reduction
-                y_red = y + this_scanner_max_dimension-scanner_reduction
+                x_red = x + this_scanner_max_dimension - scanner_reduction
+                y_red = y + this_scanner_max_dimension - scanner_reduction
 
                 # set scanner crop box size and position
                 # at x,y + crop box size
 
-                this_scanner_size = keystoned_video[y+scanner_reduction:y_red,
-                                                    x+scanner_reduction:x_red]
+                this_scanner_size = keystoned_video[y + scanner_reduction:y_red,
+                                    x + scanner_reduction:x_red]
 
                 # draw rects with mean value of color
                 mean_color = cv2.mean(this_scanner_size)
@@ -278,8 +277,8 @@ class Cityscopy:
                 if self.table_settings['gui'] is True:
                     # draw rects with frame colored by range result
                     cv2.rectangle(keystoned_video,
-                                  (x+scanner_reduction,
-                                   y+scanner_reduction),
+                                  (x + scanner_reduction,
+                                   y + scanner_reduction),
                                   (x_red, y_red),
                                   thisColor, 1)
 
@@ -297,8 +296,8 @@ class Cityscopy:
                     grid_dimensions_x, grid_dimensions_y)
 
                 try:
-                    for idx,val in enumerate(OLD_TYPES_LIST):
-                        if val==-1:
+                    for idx, val in enumerate(OLD_TYPES_LIST):
+                        if TYPES_LIST[idx] == -1:
                             TYPES_LIST[idx] = val
                 except NameError:
                     print("Name Error Occured")
@@ -330,7 +329,7 @@ class Cityscopy:
     def ui_selected_corner(self, x, y, vid):
         """prints text on video window"""
 
-        mid = (int(x/2), int(y/2))
+        mid = (int(x / 2), int(y / 2))
         if self.selected_corner is None:
             # font
             font = cv2.FONT_HERSHEY_SIMPLEX
@@ -342,14 +341,14 @@ class Cityscopy:
             # Line thickness of 2 px
             thickness = 2
             cv2.putText(vid, 'select corners using 1,2,3,4 and move using A/W/S/D',
-                        (5, int(y/2)), font,
+                        (5, int(y / 2)), font,
                         fontScale, color, thickness, cv2.LINE_AA)
         else:
             case = {
                 '1': [(0, 0), mid],
-                '2':  [(x, 0), mid],
-                '3':  [(0, y), mid],
-                '4':  [(x, y), mid],
+                '2': [(x, 0), mid],
+                '3': [(0, y), mid],
+                '4': [(x, y), mid],
             }
 
             # print(type(self.selected_corner))
@@ -360,7 +359,8 @@ class Cityscopy:
 
     ##################################################
 
-    def get_scanner_pixel_coordinates(self, grid_dimensions_x, grid_dimensions_y, video_res_x, video_res_y, scanner_square_size):
+    def get_scanner_pixel_coordinates(self, grid_dimensions_x, grid_dimensions_y, video_res_x, video_res_y,
+                                      scanner_square_size):
         """Creates list of pixel coordinates for scanner.
 
         Steps:
@@ -380,9 +380,9 @@ class Cityscopy:
         # screen size and the x dim of the grid
         # to center the grid in both Y & X
         grid_x_offset = int(0.5 *
-                            (video_res_x - (grid_dimensions_x*scanner_square_size*4)))
+                            (video_res_x - (grid_dimensions_x * scanner_square_size * 4)))
         grid_y_offset = int(0.5 *
-                            (video_res_y - (grid_dimensions_y*scanner_square_size*4)))
+                            (video_res_y - (grid_dimensions_y * scanner_square_size * 4)))
 
         # create the list of points
         pixel_coordinates_list = []
@@ -394,8 +394,8 @@ class Cityscopy:
         for y in range(0, grid_dimensions_y):
             for x in range(0, grid_dimensions_x):
 
-                x_positions = x * ((scanner_square_size*4)+cells_gap)
-                y_positions = y * ((scanner_square_size*4)+cells_gap)
+                x_positions = x * ((scanner_square_size * 4) + cells_gap)
+                y_positions = y * ((scanner_square_size * 4) + cells_gap)
 
                 # make the actual location for the 4x4 scanner points
                 for i in range(0, 4):
@@ -403,9 +403,9 @@ class Cityscopy:
                         # add them to list
                         pixel_coordinates_list.append(
                             # x value of this scanner location
-                            [grid_x_offset+x_positions + (i*scanner_square_size),
+                            [grid_x_offset + x_positions + (i * scanner_square_size),
                              # y value of this scanner location
-                             grid_y_offset+y_positions + (j*scanner_square_size)])
+                             grid_y_offset + y_positions + (j * scanner_square_size)])
         return pixel_coordinates_list
 
     ##################################################
@@ -445,12 +445,6 @@ class Cityscopy:
                 # debug print
                 print('\n', 'CityScopy grid sent at:', datetime.now())
 
-
-
-
-
-
-
     ##################################################
 
     def send_json_to_cityIO(self, cityIO_json):
@@ -458,24 +452,23 @@ class Cityscopy:
         sends the grid to cityIO
         '''
         # defining the api-endpoint
-        #API_ENDPOINT = "https://cityio.media.mit.edu/api/table/update/" + \
-            #self.table_settings['cityscope_project_name'] + "/grid/"
+        # API_ENDPOINT = "https://cityio.media.mit.edu/api/table/update/" + \
+        # self.table_settings['cityscope_project_name'] + "/grid/"
         # sending post request and saving response as response object
-        #print(cityIO_json)
+        # print(cityIO_json)
         ncol = self.table_settings['ncols']
         nrow = self.table_settings['nrows']
-        temp_json = cityIO_json.replace("[","")
-        temp_json = temp_json.replace("-1","0")
-        temp_json = temp_json.replace("]","")
+        temp_json = cityIO_json.replace("[", "")
+        temp_json = temp_json.replace("-1", "0")
+        temp_json = temp_json.replace("]", "")
         temp_json = temp_json.split(",")
         output_list = []
         output_list.append("{\n\"cells\": [\n")
-        i=0
+        i = 0
         for row in range(nrow):
             output_list.append("[")
             for col in range(ncol):
-
-                output_list.append(temp_json[i+col])
+                output_list.append(temp_json[i + col])
                 output_list.append(",\n")
             i = i + ncol
             output_list.pop()
@@ -485,38 +478,31 @@ class Cityscopy:
         output_json = "".join(output_list)
         print(output_json)
 
-
-
-
-        #croppedJSON = crop_json(cityIO_json)
+        # croppedJSON = crop_json(cityIO_json)
         error_msg = "Error sending request:"
         url = "http://localhost:4848/city/map"
-        #data = json.loads(output_json)
+        # data = json.loads(output_json)
         data = output_json
 
         try:
             with requests.post(
-                url = url,
-                data = data,
-                headers= {"Content-Type": "application/json", "Accept": "application/json",},
-                timeout=5,
+                    url=url,
+                    data=data,
+                    headers={"Content-Type": "application/json", "Accept": "application/json", },
+                    timeout=5,
             ) as r:
                 if not r.status_code == 200:
-                    print (r.raise_for_status())
-                    #print(
-                        #error_msg, r.status_code, r. r.reason, url, data, file=sys.stderr
-                    #)
-                    #print ("not 200")
+                    print(r.raise_for_status())
+                    # print(
+                    # error_msg, r.status_code, r. r.reason, url, data, file=sys.stderr
+                    # )
+                    # print ("not 200")
                 elif r.status_code == 200:
                     print("grid successful sent")
         except requests.RequestException as e:
-            #print(error_msg, e, url, data, file=sys.stderr)
-            print (data)
-            print (r.raise_for_status())
-
-
-
-
+            # print(error_msg, e, url, data, file=sys.stderr)
+            print(data)
+            print(r.raise_for_status())
 
     ###################################################
 
@@ -525,11 +511,11 @@ class Cityscopy:
         UDP_IP = "127.0.0.1"
         UDP_PORT = 5000
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        localJSON = "C:/Users/janse/OneDrive/Programing/JSON/" + str(datetime.now()).replace(":","-") + ".json"
+        localJSON = "C:/Users/janse/OneDrive/Programing/JSON/" + str(datetime.now()).replace(":", "-") + ".json"
         try:
 
             sock.sendto(str(scan_results).encode('utf-8'), (UDP_IP, UDP_PORT))
-            with open(localJSON.replace(" ",""), 'w', encoding ='utf8') as json_file:
+            with open(localJSON.replace(" ", ""), 'w', encoding='utf8') as json_file:
                 json.dump(scan_results, json_file)
         except Exception as e:
             print(e)
@@ -551,11 +537,11 @@ class Cityscopy:
         """
 
         # init array for json fields
-        settings_file = self.get_folder_path()+self.SETTINGS_PATH
+        settings_file = self.get_folder_path() + self.SETTINGS_PATH
         # open json file
         with open(settings_file) as d:
             data = json.load(d)
-        return(data[field])
+        return (data[field])
 
     ##################################################
 
@@ -726,7 +712,7 @@ class Cityscopy:
                 this_16_bits, tagsArray, mapArray)
             # if no results were found
             if result_tag == None:
-                result_tag = -1  #here be dragons
+                result_tag = -1  # here be dragons
             # add a list of results to the array
             scan_results_array.append(result_tag)
         # finally, return this list to main program for UDP
@@ -758,7 +744,7 @@ class Cityscopy:
             else:
                 # if no rotation was found go to next tag
                 # in tag list
-                tags_array_counter = tags_array_counter+1
+                tags_array_counter = tags_array_counter + 1
 
     ##################################################
 
@@ -779,7 +765,7 @@ class Cityscopy:
 
     def keystone(self):
         # file path to save
-        self.KEYSTONE_PATH = self.get_folder_path() + '/'+"keystone.txt"
+        self.KEYSTONE_PATH = self.get_folder_path() + '/' + "keystone.txt"
         print('keystone path:', self.KEYSTONE_PATH)
 
         # serial num of camera, to switch between cameras
@@ -811,31 +797,25 @@ class Cityscopy:
                 cv2.setMouseCallback('canvas', save_this_point)
                 # read the WEBCAM frames
 
-
                 _, self.FRAME = WEBCAM.read()
                 h, w, *_ = self.FRAME.shape
                 res_matrix = np.array([[w, 0, 0], [0, h, 0], [0, 0, 1]])
 
-                matrix = [[ 0.6834898667393322, 0.0, 0.4965583739104512 ], [ 0.0, 1.216452331944533, 0.5026849121434522 ], [ 0.0, 0.0, 1.0 ] ]
-                distortion = [ -0.3714812399536999, 0.21247979505344064, -0.00020619953391510647, -0.0009202007819819389, -0.08640239614978638 ]
-                #distortion = [ -0.5714812399536999, 0.31247979505344064, -0.0020619953391510647, -0.009202007819819389, -0.8640239614978638 ]
+                matrix = [[0.6834898667393322, 0.0, 0.4965583739104512], [0.0, 1.216452331944533, 0.5026849121434522],
+                          [0.0, 0.0, 1.0]]
+                distortion = [-0.3714812399536999, 0.21247979505344064, -0.00020619953391510647, -0.0009202007819819389,
+                              -0.08640239614978638]
+                # distortion = [ -0.5714812399536999, 0.31247979505344064, -0.0020619953391510647, -0.009202007819819389, -0.8640239614978638 ]
 
                 rel_camera_matrix = np.array(matrix)
                 distortion_coefficients = np.array(distortion)
 
                 abs_camera_matrix = np.matmul(res_matrix, rel_camera_matrix)
-                self.FRAME = cv2.undistort(self.FRAME,abs_camera_matrix, distortion_coefficients, None, None)
-
-
+                self.FRAME = cv2.undistort(self.FRAME, abs_camera_matrix, distortion_coefficients, None, None)
 
                 # _, self.FRAME = WEBCAM.read()
                 if self.table_settings['mirror_cam'] is True:
                     self.FRAME = cv2.flip(self.FRAME, 1)
-
-
-
-
-
 
                 # draw mouse pos
                 cv2.circle(self.FRAME, self.MOUSE_POSITION, 10, (0, 0, 255), 1)
@@ -858,6 +838,7 @@ class Cityscopy:
                 # save this point to the array pts
                 self.POINTS[self.POINT_INDEX] = (x, y)
                 self.POINT_INDEX = self.POINT_INDEX + 1
+
         # checks if finished selecting the 4 corners
         if selectFourPoints():
             np.savetxt(self.KEYSTONE_PATH, self.POINTS)
