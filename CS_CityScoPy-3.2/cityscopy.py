@@ -218,14 +218,14 @@ class Cityscopy:
             else:
                 h, w, *_ = this_frame.shape
                 res_matrix = np.array([[w, 0, 0], [0, h, 0], [0, 0, 1]])
-        
+
                 matrix = [[ 0.6834898667393322, 0.0, 0.4965583739104512 ], [ 0.0, 1.216452331944533, 0.5026849121434522 ], [ 0.0, 0.0, 1.0 ] ]
                 distortion = [ -0.3714812399536999, 0.21247979505344064, -0.00020619953391510647, -0.0009202007819819389, -0.08640239614978638 ]
                 # distortion = [ -0.5714812399536999, 0.31247979505344064, -0.0020619953391510647, -0.009202007819819389, -0.8640239614978638 ]
 
                 rel_camera_matrix = np.array(matrix)
                 distortion_coefficients = np.array(distortion)
-        
+
                 abs_camera_matrix = np.matmul(res_matrix, rel_camera_matrix)
                 this_frame = cv2.undistort(this_frame,abs_camera_matrix, distortion_coefficients, None, None)
 
@@ -296,11 +296,19 @@ class Cityscopy:
                     array_of_maps_form_json,
                     grid_dimensions_x, grid_dimensions_y)
 
+                try:
+                    for idx,val in enumerate(OLD_TYPES_LIST):
+                        if val==-1:
+                            TYPES_LIST[idx] = val
+                except NameError:
+                    print("Name Error Occured")
                 # match the two
                 OLD_CELL_COLORS_ARRAY = CELL_COLORS_ARRAY
 
                 # [!] Store the type list results in the multiprocess_shared_dict
                 multiprocess_shared_dict['scan'] = TYPES_LIST
+
+                OLD_TYPES_LIST = TYPES_LIST
 
             else:
                 # else don't do it
@@ -447,7 +455,7 @@ class Cityscopy:
 
     def send_json_to_cityIO(self, cityIO_json):
         '''
-        sends the grid to cityIO 
+        sends the grid to cityIO
         '''
         # defining the api-endpoint
         #API_ENDPOINT = "https://cityio.media.mit.edu/api/table/update/" + \
@@ -478,8 +486,8 @@ class Cityscopy:
         print(output_json)
 
 
-            
-        
+
+
         #croppedJSON = crop_json(cityIO_json)
         error_msg = "Error sending request:"
         url = "http://localhost:4848/city/map"
@@ -519,7 +527,7 @@ class Cityscopy:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         localJSON = "C:/Users/janse/OneDrive/Programing/JSON/" + str(datetime.now()).replace(":","-") + ".json"
         try:
-            
+
             sock.sendto(str(scan_results).encode('utf-8'), (UDP_IP, UDP_PORT))
             with open(localJSON.replace(" ",""), 'w', encoding ='utf8') as json_file:
                 json.dump(scan_results, json_file)
@@ -807,14 +815,14 @@ class Cityscopy:
                 _, self.FRAME = WEBCAM.read()
                 h, w, *_ = self.FRAME.shape
                 res_matrix = np.array([[w, 0, 0], [0, h, 0], [0, 0, 1]])
-        
+
                 matrix = [[ 0.6834898667393322, 0.0, 0.4965583739104512 ], [ 0.0, 1.216452331944533, 0.5026849121434522 ], [ 0.0, 0.0, 1.0 ] ]
                 distortion = [ -0.3714812399536999, 0.21247979505344064, -0.00020619953391510647, -0.0009202007819819389, -0.08640239614978638 ]
                 #distortion = [ -0.5714812399536999, 0.31247979505344064, -0.0020619953391510647, -0.009202007819819389, -0.8640239614978638 ]
 
                 rel_camera_matrix = np.array(matrix)
                 distortion_coefficients = np.array(distortion)
-        
+
                 abs_camera_matrix = np.matmul(res_matrix, rel_camera_matrix)
                 self.FRAME = cv2.undistort(self.FRAME,abs_camera_matrix, distortion_coefficients, None, None)
 
@@ -823,12 +831,12 @@ class Cityscopy:
                 # _, self.FRAME = WEBCAM.read()
                 if self.table_settings['mirror_cam'] is True:
                     self.FRAME = cv2.flip(self.FRAME, 1)
-                
-                
-                
-                
-                
-                
+
+
+
+
+
+
                 # draw mouse pos
                 cv2.circle(self.FRAME, self.MOUSE_POSITION, 10, (0, 0, 255), 1)
                 cv2.circle(self.FRAME, self.MOUSE_POSITION, 1, (0, 0, 255), 2)
